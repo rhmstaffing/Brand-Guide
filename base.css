@@ -1,0 +1,4 @@
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-body);background:var(--surface-page)}
+a{color:var(--text-link);text-decoration:none}
+a:hover{color:var(--rhm-navy);text-decoration:underline}
