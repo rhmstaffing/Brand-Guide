@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  MANAGER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  TERMINATED
+}
+
+enum ContactSource {
+  SHARED_BACK
+  SCAN
+  MANUAL
+}
+
+enum ContactStatus {
+  DRAFT
+  READY
+  SYNCED
+  FAILED
+}
+
+enum ContactKind {
+  CANDIDATE
+  CLIENT
+  OTHER
+}
+
+model Office {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  address   String?
+  city      String?
+  state     String?
+  phone     String?
+  users     User[]
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id          String     @id @default(cuid())
+  email       String     @unique
+  slug        String     @unique
+  role        Role       @default(USER)
+  status      UserStatus @default(ACTIVE)
+  jobRole     String? // "Recruiter", "Account Executive", etc.
+  firstName   String     @default("")
+  lastName    String     @default("")
+  pronouns    String?
+  title       String?
+  phone       String?
+  mobile      String?
+  bio         String?
+  photo       String? // data URL, kept small by the client-side resize
+  website     String?
+  linkedin    String?
+  calendarUrl String?
+  links       Json       @default("[]") // [{label, url}]
+  theme       String     @default("navy")
+  officeId    String?
+  office      Office?    @relation(fields: [officeId], references: [id])
+  sfUserId    String?
+
+  qrPng       Bytes?
+  qrTarget    String?
+  qrSource    String? // "qrcode-monkey" or "local"
+  qrUpdatedAt DateTime?
+
+  terminatedAt DateTime?
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  sessions  Session[]
+  events    CardEvent[]
+  contacts  Contact[]
+  auditsBy  AuditLog[]  @relation("actor")
+  auditsFor AuditLog[]  @relation("target")
+}
+
+model LoginCode {
+  id        String    @id @default(cuid())
+  email     String
+  codeHash  String
+  attempts  Int       @default(0)
+  expiresAt DateTime
+  usedAt    DateTime?
+  ip        String?
+  createdAt DateTime  @default(now())
+
+  @@index([email, createdAt])
+}
+
+model Session {
+  id         String    @id @default(cuid())
+  tokenHash  String    @unique
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent  String?
+  ip         String?
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  revokedBy  String?
+
+  @@index([userId])
+}
+
+// Every interaction with someone's public card.
+// type: VIEW | QR_SCAN | LINK_CLICK | VCARD_SAVE | SHARE | WALLET_ADD | NFC_TAP | SHARED_BACK
+model CardEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  target    String?
+  source    String?
+  userAgent String?
+  visitor   String? // hashed ip + ua, used for unique counts
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([type, createdAt])
+}
+
+model Contact {
+  id        String        @id @default(cuid())
+  ownerId   String
+  owner     User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  source    ContactSource
+  kind      ContactKind   @default(OTHER)
+  status    ContactStatus @default(DRAFT)
+  firstName String        @default("")
+  lastName  String        @default("")
+  email     String?
+  phone     String?
+  company   String?
+  title     String?
+  website   String?
+  address   String?
+  notes     String?
+  rawText   String? // full OCR transcription
+  tags      String[]      @default([])
+  scanImage String? // first page thumbnail (data URL)
+  consent   Boolean       @default(false)
+
+  reviewedAt DateTime?
+  sfObject   String?
+  sfId       String?
+  sfError    String?
+  syncedAt   DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([ownerId, createdAt])
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorId      String?
+  actor        User?    @relation("actor", fields: [actorId], references: [id], onDelete: SetNull)
+  targetUserId String?
+  target       User?    @relation("target", fields: [targetUserId], references: [id], onDelete: SetNull)
+  action       String
+  details      Json?
+  ip           String?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([targetUserId, createdAt])
+}

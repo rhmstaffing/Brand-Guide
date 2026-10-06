@@ -121,6 +121,7 @@ All uploaded to this project (originals in `uploads/`):
 - `components/`: React primitives (below)
 - `ui_kits/website/`: marketing site click-through
 - `SKILL.md`: agent skill entry
+- `card-app/`: RHM Cards, the digital business card app and site (see `card-app/README.md`)
 
 ### Components
 - **brand/**: `Logo`, `Icon`, `SectionHeading`
