@@ -6,6 +6,8 @@ import { requireRole, revokeAllSessions } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { isAllowedEmail } from "@/lib/config";
 import { uniqueSlug } from "@/lib/slug";
+import { archiveUser, buildArchive, restoreUser } from "@/lib/archive";
+import { runEntraSync } from "@/lib/entra";
 
 async function admin() {
   return requireRole("ADMIN");
@@ -32,23 +34,37 @@ export async function revokeSession(form: FormData) {
   refresh(s.userId);
 }
 
-// Termination turns the account off, signs out every device, and takes their public card offline.
-export async function terminate(form: FormData) {
+// Archiving saves a downloadable copy of the account, signs out every device,
+// blocks login and takes their public card offline.
+export async function archive(form: FormData) {
   const me = await admin();
   const userId = String(form.get("userId"));
-  if (userId === me.id) throw new Error("You can't terminate your own account.");
-  await db.user.update({ where: { id: userId }, data: { status: "TERMINATED", terminatedAt: new Date() } });
-  const r = await revokeAllSessions(userId, me.id);
-  await audit("admin.terminate", { actorId: me.id, targetUserId: userId, details: { sessions: r.count } });
+  if (userId === me.id) throw new Error("You can't archive your own account.");
+  await archiveUser(userId, "admin", me.id);
   refresh(userId);
 }
 
-export async function reactivate(form: FormData) {
+export async function restore(form: FormData) {
   const me = await admin();
   const userId = String(form.get("userId"));
-  await db.user.update({ where: { id: userId }, data: { status: "ACTIVE", terminatedAt: null } });
-  await audit("admin.reactivate", { actorId: me.id, targetUserId: userId });
+  await restoreUser(userId, me.id);
   refresh(userId);
+}
+
+// A copy of everything in the account, without locking it.
+export async function exportAccount(form: FormData) {
+  const me = await admin();
+  const userId = String(form.get("userId"));
+  const a = await buildArchive(userId, "export", me.id);
+  await audit("admin.export_account", { actorId: me.id, targetUserId: userId, details: { archiveId: a.id } });
+  refresh(userId);
+}
+
+export async function syncEntraNow() {
+  const me = await admin();
+  await runEntraSync("admin");
+  await audit("admin.entra_sync", { actorId: me.id });
+  refresh();
 }
 
 export async function setRole(form: FormData) {

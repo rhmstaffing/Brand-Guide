@@ -14,8 +14,9 @@ enum Role {
 }
 
 enum UserStatus {
+  PENDING // hired in Entra, start date not reached yet
   ACTIVE
-  TERMINATED
+  ARCHIVED // terminated: locked out, card offline, data kept in an archive
 }
 
 enum ContactSource {
@@ -40,6 +41,7 @@ enum ContactKind {
 model Office {
   id        String   @id @default(cuid())
   name      String   @unique
+  entraNames String[] @default([]) // Entra "officeLocation" values that map to this office
   address   String?
   city      String?
   state     String?
@@ -77,7 +79,14 @@ model User {
   qrSource    String? // "qrcode-monkey" or "local"
   qrUpdatedAt DateTime?
 
-  terminatedAt DateTime?
+  archivedAt    DateTime?
+  archiveReason String? // "entra-disabled", "entra-deleted", "admin"
+
+  // Microsoft Entra ID (Azure AD) link
+  entraId       String?   @unique
+  entraSyncedAt DateTime?
+  entraValues   Json? // last values copied from Entra, so we only overwrite fields the person hasn't changed
+  startsAt      DateTime?
   lastLoginAt  DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -87,6 +96,31 @@ model User {
   contacts  Contact[]
   auditsBy  AuditLog[]  @relation("actor")
   auditsFor AuditLog[]  @relation("target")
+  archives  AccountArchive[]
+}
+
+// A frozen copy of everything in an account, made when it is archived (or on demand by an admin).
+model AccountArchive {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason       String
+  createdById  String?
+  contactCount Int
+  eventCount   Int
+  sizeBytes    Int
+  zip          Bytes
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// Key/value state for background jobs (Entra delta link, Graph subscription, locks).
+model SyncState {
+  key         String    @id
+  value       Json?
+  lockedUntil DateTime?
+  updatedAt   DateTime  @updatedAt
 }
 
 model LoginCode {

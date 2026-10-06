@@ -20,8 +20,11 @@ Digital business cards for RHM Staffing Solutions. Works on iPhone, Android and 
 **For admins** (anyone in `ADMIN_EMAILS`)
 - See every account, every contact, every card event and an audit log of logins and changes.
 - Sign someone out of one device or every device. Takes effect on their next tap.
-- Terminate: signs them out everywhere, blocks login, and takes their public card offline. Their contacts can be moved to someone else. Reactivate any time.
+- Archive: first saves a ZIP of everything in the account (contacts as an Excel-ready CSV and full JSON, scanned photos, card activity, account log, devices, profile, QR code). Then it signs them out everywhere, blocks login, and takes their public card offline. Admins download the ZIP from the person's admin page any time. Contacts can also be moved to someone else. Restore any time.
+- Make an export of any account without locking it.
 - Manage offices, roles, and add people before their first login. Export all contacts to CSV.
+
+**Microsoft 365 / Entra ID**: when connected, a new hire's card is made automatically on their start date, and when someone is turned off or deleted in Microsoft 365 their account is archived within minutes. See "Microsoft Entra ID" below.
 
 **Login**: only `@rhmstaffing.net` emails. No passwords. They enter their email and get a 6 digit code (expires in 10 minutes, 5 tries, 5 codes per 15 minutes). Accounts are created on first login.
 
@@ -72,6 +75,35 @@ Works without a key on their free API. If you hit limits, get a RapidAPI key for
 2. Create a Google Cloud service account, give it access to the issuer, download its JSON key.
 3. Put the issuer ID, the service account email, and the base64 of its `private_key` into the `GOOGLE_WALLET_*` settings.
 
+### Microsoft Entra ID (Azure AD)
+
+This is what makes cards appear for new hires and get archived at termination with nobody touching the app.
+
+**What happens**
+| In Microsoft 365 / Entra | In RHM Cards |
+|---|---|
+| New user, account on, Employee hire date today or earlier (or blank) | Card made with name, title, mobile, office phone and office filled in. QR made. Welcome email sent. |
+| New user with a hire date in the future | Account waits as "Starts <date>". Can't sign in yet. Turns on that morning and the welcome email goes out. |
+| Name, title, phone or office changes | Copied to the card, unless the person already changed that field themselves. |
+| Account turned off (Block sign in) | Account archived: ZIP saved, signed out everywhere, locked out, card offline. Admins get an email with a download link. |
+| User deleted | Same as turned off. |
+| Account turned back on (rehire) | Account restored with all their old contacts. Accounts an admin archived by hand stay archived. |
+
+Guests, accounts that aren't `@rhmstaffing.net`, and disabled accounts like conference rooms are skipped.
+
+**Setup (about 15 minutes, needs a Microsoft 365 admin)**
+1. Go to entra.microsoft.com, then App registrations, then New registration. Name it "RHM Cards". Single tenant. No redirect URL.
+2. In the app, open API permissions, then Add a permission, Microsoft Graph, **Application permissions**. Add `User.Read.All`. If you'll use a group, also add `GroupMember.Read.All`. Click **Grant admin consent**.
+3. Open Certificates & secrets and make a new client secret. Copy the value.
+4. Put the Directory (tenant) ID, Application (client) ID and secret into `ENTRA_TENANT_ID`, `ENTRA_CLIENT_ID`, `ENTRA_CLIENT_SECRET`.
+5. Recommended: make a security group (for example "RHM Cards users") with recruiters, AEs and anyone else who should get a card, and put its Object ID in `ENTRA_GROUP_ID`. Without it, every `@rhmstaffing.net` member account gets a card. Removing someone from the group does not archive them. Only turning off or deleting their account does.
+6. Set `ENTRA_WEBHOOK_SECRET` and `CRON_SECRET` to two different long random strings.
+7. Schedule `GET https://cards.rhmstaffing.net/api/cron/entra` with the header `Authorization: Bearer <CRON_SECRET>` every 15 to 30 minutes. On Vercel this is already set up in `vercel.json` (every 30 minutes needs a Pro plan; Hobby only allows once a day). On Azure, use a Logic App with a Recurrence trigger and an HTTP action, or an Azure Function timer.
+8. In Admin, click **Sync now**. The first sync imports everyone and links people who already signed in.
+9. HR should fill in **Employee hire date** in Entra (user, Properties, Job information) so cards turn on on day one.
+
+The scheduled call also renews the live update subscription, so terminations show up within a few minutes instead of waiting for the next scheduled run. The Admin page shows when the last sync ran and what it did.
+
 ## Phone apps
 
 - **Right away, no app store**: open the site on a phone and choose "Add to Home Screen" (iPhone) or "Install app" (Android/Chrome). It opens full screen like an app. Desktop Chrome and Edge can install it too.
@@ -100,5 +132,7 @@ Works without a key on their free API. If you hit limits, get a RapidAPI key for
 - `src/app/c/[slug]` public card, `src/app/r/[slug]` click tracking redirect (only to the card's own links)
 - `src/app/(app)` signed-in pages: dashboard, card, share, contacts, scan, team, admin
 - `src/lib/auth.ts` sessions (checked on every request so remote sign out is instant)
+- `src/lib/entra.ts` Microsoft Entra ID sync, `src/lib/archive.ts` archive ZIPs
+- `src/app/api/integrations/entra/notify` live updates from Microsoft, `src/app/api/cron/entra` scheduled sync
 - `src/lib/qr.ts` QR Code Monkey, `src/lib/salesforce.ts`, `src/lib/ocr.ts`, `src/lib/wallet.ts`
 - `prisma/schema.prisma` database

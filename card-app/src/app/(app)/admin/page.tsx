@@ -5,7 +5,10 @@ import { db } from "@/lib/db";
 import { salesforceConfigured } from "@/lib/salesforce";
 import { ocrConfigured } from "@/lib/ocr";
 import { appleWalletConfigured, googleWalletConfigured } from "@/lib/wallet";
-import { inviteUser, saveOffice, deleteOffice, signOutEverywhere, terminate, reactivate } from "./actions";
+import { inviteUser, saveOffice, deleteOffice, signOutEverywhere, archive, restore } from "./actions";
+import { StatusBadge } from "./StatusBadge";
+import { EntraPanel } from "./EntraPanel";
+import { entraConfigured } from "@/lib/entra";
 import { ConfirmButton } from "./ConfirmButton";
 
 export const metadata = { title: "Admin | RHM Cards" };
@@ -14,7 +17,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   await requireRole("ADMIN");
   const { q = "", status = "" } = await searchParams;
   const where: Prisma.UserWhereInput = {};
-  if (status === "ACTIVE" || status === "TERMINATED") where.status = status;
+  if (status === "ACTIVE" || status === "PENDING" || status === "ARCHIVED") where.status = status;
   if (q) where.OR = ["email", "firstName", "lastName"].map((f) => ({ [f]: { contains: q, mode: "insensitive" } }));
   const since = new Date(Date.now() - 30 * 864e5);
   const [users, offices, sessions, contacts, logs] = await Promise.all([
@@ -32,6 +35,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     ["Apple Wallet", appleWalletConfigured()],
     ["Google Wallet", googleWalletConfigured()],
     ["Email (SMTP)", Boolean(process.env.SMTP_HOST)],
+    ["Microsoft Entra ID", entraConfigured()],
     ["QR Code Monkey", true],
   ];
 
@@ -49,6 +53,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
         {checks.map(([l, ok]) => <span key={l} className={`badge ${ok ? "ok" : "warn"}`}>{l}: {ok ? "connected" : "not set up"}</span>)}
       </div>
 
+      <EntraPanel />
+
       <section className="stack-sm">
         <div className="row between">
           <h2>Everyone ({users.length})</h2>
@@ -57,7 +63,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             <select name="status" defaultValue={status} style={{ width: "auto" }}>
               <option value="">All</option>
               <option value="ACTIVE">Active</option>
-              <option value="TERMINATED">Terminated</option>
+              <option value="PENDING">Starting soon</option>
+              <option value="ARCHIVED">Archived</option>
             </select>
             <button className="btn secondary sm">Filter</button>
           </form>
@@ -75,19 +82,22 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                     <div className="tiny muted">{u.email}{u.role !== "USER" ? ` · ${u.role.toLowerCase()}` : ""}</div>
                   </td>
                   <td className="hide-sm">{u.office?.name ?? <span className="muted">None</span>}</td>
-                  <td><span className={`badge ${u.status === "ACTIVE" ? "ok" : "err"}`}>{u.status === "ACTIVE" ? "Active" : "Terminated"}</span></td>
+                  <td><StatusBadge status={u.status} date={u.status === "PENDING" ? u.startsAt : u.archivedAt} /></td>
                   <td className="num hide-sm">{sMap.get(u.id) ?? 0}</td>
                   <td className="num hide-sm">{cMap.get(u.id) ?? 0}</td>
                   <td className="hide-sm muted small">{u.lastLoginAt ? u.lastLoginAt.toLocaleString() : "Never"}</td>
                   <td>
                     <div className="row" style={{ justifyContent: "flex-end", flexWrap: "nowrap" }}>
-                      {u.status === "ACTIVE" ? (
+                      {u.status === "ARCHIVED" ? (
                         <>
-                          <form action={signOutEverywhere}><input type="hidden" name="userId" value={u.id} /><ConfirmButton className="btn secondary sm" message={`Sign ${u.email} out of every device?`}>Sign out</ConfirmButton></form>
-                          <form action={terminate}><input type="hidden" name="userId" value={u.id} /><ConfirmButton className="btn danger sm" message={`Terminate ${u.email}? They are signed out everywhere, can't log in, and their card goes offline.`}>Terminate</ConfirmButton></form>
+                          <Link className="btn secondary sm" href={`/admin/users/${u.id}#archives`}>Download</Link>
+                          <form action={restore}><input type="hidden" name="userId" value={u.id} /><ConfirmButton className="btn ghost sm" message={`Restore ${u.email}? They can sign in again and their card goes back online.`}>Restore</ConfirmButton></form>
                         </>
                       ) : (
-                        <form action={reactivate}><input type="hidden" name="userId" value={u.id} /><button className="btn secondary sm">Reactivate</button></form>
+                        <>
+                          {u.status === "ACTIVE" && <form action={signOutEverywhere}><input type="hidden" name="userId" value={u.id} /><ConfirmButton className="btn secondary sm" message={`Sign ${u.email} out of every device?`}>Sign out</ConfirmButton></form>}
+                          <form action={archive}><input type="hidden" name="userId" value={u.id} /><ConfirmButton className="btn danger sm" message={`Archive ${u.email}? A copy of all their contacts and activity is saved for you to download. Then they're signed out everywhere, can't log in, and their card goes offline.`}>Archive</ConfirmButton></form>
+                        </>
                       )}
                     </div>
                   </td>
@@ -152,7 +162,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                 <tr key={l.id}>
                   <td className="small muted" style={{ whiteSpace: "nowrap" }}>{l.createdAt.toLocaleString()}</td>
                   <td>{l.action.replace(/[._]/g, " ")}</td>
-                  <td className="small">{l.actor?.email ?? "visitor"}</td>
+                  <td className="small">{l.actor?.email ?? (l.action.startsWith("entra") || JSON.stringify(l.details ?? "").includes("entra") ? "Microsoft sync" : "System")}</td>
                   <td className="small hide-sm">{l.target?.email}</td>
                 </tr>
               ))}

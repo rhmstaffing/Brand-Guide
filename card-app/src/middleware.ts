@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC = [/^\/login/, /^\/c\//, /^\/r\//, /^\/api\/auth\//, /^\/api\/public\//, /^\/manifest/, /^\/sw\.js$/, /^\/fonts\//, /^\/brand\//];
+const PUBLIC = [/^\/login/, /^\/c\//, /^\/r\//, /^\/api\/auth\//, /^\/api\/public\//, /^\/api\/integrations\//, /^\/api\/cron\//, /^\/manifest/, /^\/sw\.js$/, /^\/fonts\//, /^\/brand\//];
 
-// Cheap cookie check only. The real check (revoked session, terminated user)
+// Cheap cookie check only. The real check (revoked session, archived user)
 // happens on the server for every page and API call.
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

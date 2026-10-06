@@ -8,7 +8,8 @@ import { EVENT_LABELS, type EventType } from "@/lib/events";
 import { BarChart } from "@/components/BarChart";
 import { RangePicker } from "@/components/RangePicker";
 import { ConfirmButton } from "../../ConfirmButton";
-import { reactivate, revokeSession, setOffice, setRole, signOutEverywhere, terminate, transferContacts } from "../../actions";
+import { archive, exportAccount, restore, revokeSession, setOffice, setRole, signOutEverywhere, transferContacts } from "../../actions";
+import { StatusBadge } from "../../StatusBadge";
 
 export const metadata = { title: "Person | Admin | RHM Cards" };
 
@@ -24,7 +25,7 @@ export default async function AdminUser({ params, searchParams }: { params: Prom
   const u = await db.user.findUnique({ where: { id: (await params).id }, include: { office: true } });
   if (!u) notFound();
   const { key, days, since } = parseRange((await searchParams).range);
-  const [stats, sessions, events, contacts, logs, offices, others] = await Promise.all([
+  const [stats, sessions, events, contacts, logs, offices, others, archives] = await Promise.all([
     personalStats(u.id, since, days),
     db.session.findMany({ where: { userId: u.id }, orderBy: { lastSeenAt: "desc" }, take: 20 }),
     db.cardEvent.findMany({ where: { userId: u.id }, orderBy: { createdAt: "desc" }, take: 50 }),
@@ -32,6 +33,7 @@ export default async function AdminUser({ params, searchParams }: { params: Prom
     db.auditLog.findMany({ where: { OR: [{ targetUserId: u.id }, { actorId: u.id }] }, orderBy: { createdAt: "desc" }, take: 50, include: { actor: { select: { email: true } } } }),
     db.office.findMany({ orderBy: { name: "asc" } }),
     db.user.findMany({ where: { status: "ACTIVE", id: { not: u.id } }, orderBy: { lastName: "asc" }, select: { id: true, firstName: true, lastName: true, email: true } }),
+    db.accountArchive.findMany({ where: { userId: u.id }, orderBy: { createdAt: "desc" }, select: { id: true, reason: true, createdAt: true, contactCount: true, eventCount: true, sizeBytes: true } }),
   ]);
   const now = new Date();
   const live = sessions.filter((s) => !s.revokedAt && s.expiresAt > now);
@@ -47,7 +49,8 @@ export default async function AdminUser({ params, searchParams }: { params: Prom
           <p className="muted small">{u.email} · {u.title || "No title"} · {u.office?.name || "No office"}</p>
         </div>
         <div className="row">
-          <span className={`badge ${u.status === "ACTIVE" ? "ok" : "err"}`}>{u.status === "ACTIVE" ? "Active" : `Terminated ${u.terminatedAt?.toLocaleDateString() ?? ""}`}</span>
+          <StatusBadge status={u.status} date={u.status === "PENDING" ? u.startsAt : u.archivedAt} />
+          {u.entraId && <span className="badge info">Synced from Microsoft</span>}
           {u.status === "ACTIVE" && <a className="btn secondary sm" href={cardUrl(u.slug)} target="_blank">View card</a>}
         </div>
       </div>
@@ -55,15 +58,15 @@ export default async function AdminUser({ params, searchParams }: { params: Prom
       <div className="card stack">
         <h2>Access</h2>
         <div className="row">
-          {u.status === "ACTIVE" ? (
+          {u.status !== "ARCHIVED" ? (
             <>
               <form action={signOutEverywhere}><input type="hidden" name="userId" value={u.id} /><ConfirmButton className="btn secondary" message={`Sign ${u.email} out of all ${live.length} devices?`}>Sign out of all devices ({live.length})</ConfirmButton></form>
               {u.id !== me.id && (
-                <form action={terminate}><input type="hidden" name="userId" value={u.id} /><ConfirmButton className="btn danger" message={`Terminate ${u.email}? They are signed out everywhere, can't log in again, and their public card goes offline.`}>Terminate</ConfirmButton></form>
+                <form action={archive}><input type="hidden" name="userId" value={u.id} /><ConfirmButton className="btn danger" message={`Archive ${u.email}? A copy of all their contacts and activity is saved for you to download. Then they're signed out everywhere, can't log in, and their card goes offline.`}>Archive account</ConfirmButton></form>
               )}
             </>
           ) : (
-            <form action={reactivate}><input type="hidden" name="userId" value={u.id} /><button className="btn">Reactivate</button></form>
+            <form action={restore}><input type="hidden" name="userId" value={u.id} /><ConfirmButton className="btn" message={`Restore ${u.email}? They can sign in again and their card goes back online.`}>Restore account</ConfirmButton></form>
           )}
           <form action={setRole} className="row">
             <input type="hidden" name="userId" value={u.id} />
@@ -121,6 +124,38 @@ export default async function AdminUser({ params, searchParams }: { params: Prom
           </table>
         </div>
       </div>
+
+      <section id="archives" className="card stack-sm">
+        <div className="row between">
+          <h2>Archives and exports</h2>
+          <form action={exportAccount}><input type="hidden" name="userId" value={u.id} /><button className="btn secondary sm">Make an export now</button></form>
+        </div>
+        <p className="small muted">Each download is a ZIP with their contacts (Excel and full detail), scanned photos, card activity, account log, profile and QR code.</p>
+        {u.status === "ARCHIVED" && u.archiveReason && (
+          <p className="small">Archived {u.archivedAt?.toLocaleString()} {u.archiveReason.startsWith("entra") ? "because their Microsoft account was turned off" : "by an admin"}.</p>
+        )}
+        {archives.length === 0 ? (
+          <p className="small muted">No archives yet.</p>
+        ) : (
+          <div className="table-wrap">
+            <table>
+              <thead><tr><th>Made</th><th>Why</th><th className="num">Contacts</th><th className="num hide-sm">Events</th><th className="num hide-sm">Size</th><th></th></tr></thead>
+              <tbody>
+                {archives.map((a) => (
+                  <tr key={a.id}>
+                    <td className="small">{a.createdAt.toLocaleString()}</td>
+                    <td className="small">{{ admin: "Archived by admin", "entra-disabled": "Turned off in Microsoft", "entra-deleted": "Deleted in Microsoft", export: "Export" }[a.reason] ?? a.reason}</td>
+                    <td className="num">{a.contactCount}</td>
+                    <td className="num hide-sm">{a.eventCount}</td>
+                    <td className="num hide-sm">{a.sizeBytes > 1e6 ? `${(a.sizeBytes / 1e6).toFixed(1)} MB` : `${Math.ceil(a.sizeBytes / 1e3)} KB`}</td>
+                    <td><a className="btn secondary sm" href={`/api/admin/archives/${a.id}`}>Download</a></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
 
       <div className="row between">
         <h2>Card activity</h2>

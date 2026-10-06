@@ -24,7 +24,7 @@ export async function createSession(userId: string, userAgent: string, ip: strin
 }
 
 // Every request re-checks the session row and the user status, so a remote
-// sign out or a termination takes effect on the very next click.
+// sign out or an archive takes effect on the very next click.
 export async function getSession(): Promise<{ user: SessionUser; sessionId: string } | null> {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;

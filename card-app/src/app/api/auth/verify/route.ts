@@ -6,6 +6,7 @@ import { createSession } from "@/lib/auth";
 import { uniqueSlug } from "@/lib/slug";
 import { audit } from "@/lib/audit";
 import { clientInfo } from "@/lib/request";
+import { entraOnly } from "@/lib/entra";
 
 export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as { email?: string; code?: string };
@@ -30,6 +31,9 @@ export async function POST(req: Request) {
   const { ip, userAgent } = await clientInfo();
   let user = await db.user.findUnique({ where: { email } });
   const isAdmin = adminEmails().includes(email);
+  if (!user && entraOnly() && !adminEmails().includes(email)) {
+    return NextResponse.json({ error: "We don't have a card for this email yet. Talk to your manager or marketing." }, { status: 403 });
+  }
   if (!user) {
     const local = email.split("@")[0];
     const [first = "", last = ""] = local.split(/[._-]/);
