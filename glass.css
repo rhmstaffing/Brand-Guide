@@ -1,0 +1,25 @@
+/* Liquid glass. Recipe lifted from the uploaded Apple Community reference (Untitled.svg):
+   0.5px light outer ring, 2-layer soft drop (8/15 @ 2%), bright top inner highlight, dim bottom inner edge, heavy backdrop blur. */
+:root{
+--glass-blur:24px; /* @kind other */
+--glass-saturate:180%; /* @kind other */
+--glass-radius:28px; /* @kind spacing */
+--glass-radius-pill:999px; /* @kind spacing */
+
+--glass-dark-fill:rgba(18,22,30,0.42);
+--glass-dark-tint:linear-gradient(180deg,rgba(255,255,255,0.10) 0%,rgba(255,255,255,0.02) 45%,rgba(255,255,255,0.05) 100%);
+--glass-dark-ring:rgba(255,255,255,0.18);
+
+--glass-light-fill:rgba(255,255,255,0.38);
+--glass-light-tint:linear-gradient(180deg,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0.28) 100%);
+--glass-light-ring:rgba(255,255,255,0.70);
+
+--glass-brand-fill:rgba(8,79,163,0.30);
+--glass-brand-tint:linear-gradient(180deg,rgba(82,192,228,0.28) 0%,rgba(8,79,163,0.06) 55%,rgba(82,192,228,0.14) 100%);
+--glass-brand-ring:rgba(82,192,228,0.45);
+
+--glass-edge-highlight:inset 0 1px 0 rgba(255,255,255,0.45),inset 0 0 0 0.5px rgba(255,255,255,0.12),inset 0 12px 24px -12px rgba(255,255,255,0.22); /* @kind shadow */
+--glass-edge-shade:inset 0 -1px 0 rgba(255,255,255,0.10),inset 0 -14px 20px -14px rgba(0,0,0,0.28); /* @kind shadow */
+--glass-drop:0 8px 15px rgba(0,0,0,0.02),0 18px 40px rgba(2,10,30,0.28);
+--glass-drop-lift:0 12px 22px rgba(0,0,0,0.06),0 28px 60px rgba(2,10,30,0.38);
+}

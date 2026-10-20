@@ -1,0 +1,33 @@
+/* Shape + edge + loop motifs. Angle measured from the diagonal cuts in the RHM logo (R leg, M strokes): about 32deg off vertical, leaning "\" (top-left to bottom-right). Use positive skewX(var(--skew-logo)) for the exact angle; clip presets use an 18% offset, so their angle depends on the box ratio. */
+:root{
+--skew-logo:32deg; /* @kind other */
+--skew-soft:16deg; /* @kind other */
+--clip-parallelogram:polygon(0 0,82% 0,100% 100%,18% 100%); /* @kind other */
+--clip-parallelogram-right:polygon(0 0,82% 0,100% 100%,0 100%); /* @kind other */
+--clip-parallelogram-left:polygon(0 0,100% 0,100% 100%,18% 100%); /* @kind other */
+--mask-fade-edges:radial-gradient(ellipse 72% 72% at 50% 50%,#000 55%,transparent 100%); /* @kind other */
+--mask-fade-x:linear-gradient(90deg,transparent 0,#000 18%,#000 82%,transparent 100%); /* @kind other */
+--mask-fade-y:linear-gradient(180deg,transparent 0,#000 18%,#000 82%,transparent 100%); /* @kind other */
+--loop-slow:24s; /* @kind other */
+--loop-med:12s; /* @kind other */
+--loop-fast:6s; /* @kind other */
+--ease-loop:cubic-bezier(0.45,0,0.55,1); /* @kind other */
+}
+.rhm-fade-edges{-webkit-mask-image:var(--mask-fade-edges);mask-image:var(--mask-fade-edges)}
+.rhm-fade-x{-webkit-mask-image:var(--mask-fade-x);mask-image:var(--mask-fade-x)}
+.rhm-fade-y{-webkit-mask-image:var(--mask-fade-y);mask-image:var(--mask-fade-y)}
+.rhm-parallelogram{clip-path:var(--clip-parallelogram)}
+.rhm-drift{animation:rhm-drift var(--loop-slow) var(--ease-loop) infinite alternate}
+.rhm-float{animation:rhm-float var(--loop-med) var(--ease-loop) infinite alternate}
+.rhm-wave-slide{animation:rhm-wave-slide var(--loop-slow) linear infinite}
+.rhm-pulse{animation:rhm-pulse var(--loop-fast) var(--ease-loop) infinite alternate}
+.rhm-flow{animation:rhm-flow var(--loop-slow) linear infinite}
+.rhm-flow-rev{animation:rhm-flow-rev var(--loop-slow) linear infinite}
+.rhm-current{animation:rhm-wave-slide 40s linear infinite}
+@keyframes rhm-drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(6%,-4%) scale(1.12)}}
+@keyframes rhm-float{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-14px) rotate(3deg)}}
+@keyframes rhm-wave-slide{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes rhm-pulse{0%{opacity:.55}100%{opacity:1}}
+@keyframes rhm-flow{0%{transform:translate(0,0) rotate(0) scale(1)}25%{transform:translate(8%,4%) rotate(90deg) scale(1.08)}50%{transform:translate(2%,10%) rotate(180deg) scale(.96)}75%{transform:translate(-6%,4%) rotate(270deg) scale(1.06)}100%{transform:translate(0,0) rotate(360deg) scale(1)}}
+@keyframes rhm-flow-rev{0%{transform:translate(0,0) rotate(0) scale(1)}25%{transform:translate(-7%,-5%) rotate(-90deg) scale(1.06)}50%{transform:translate(-2%,-10%) rotate(-180deg) scale(1.1)}75%{transform:translate(6%,-4%) rotate(-270deg) scale(.97)}100%{transform:translate(0,0) rotate(-360deg) scale(1)}}
+@media (prefers-reduced-motion:reduce){.rhm-drift,.rhm-float,.rhm-wave-slide,.rhm-pulse,.rhm-flow,.rhm-flow-rev,.rhm-current{animation:none}}

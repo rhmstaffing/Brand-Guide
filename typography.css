@@ -2,6 +2,8 @@
 --font-title:"RHM Title","Oswald","Arial Narrow",sans-serif;
 --font-display:"Josefin Sans","Futura","Century Gothic",sans-serif;
 --font-body:"Google Sans","Segoe UI",system-ui,sans-serif;
+--font-subtitle:"RHM Subtitle","RHM Title","Arial Narrow",sans-serif; /* reserved for TA / internal hiring (TA may also use all other brand fonts): big numbers + loud subtitles */
+--fs-stat:96px;
 
 --fs-hero:72px;
 --fs-h1:56px;
@@ -32,4 +34,5 @@
 --type-hero-family:var(--font-title); /* @kind font */
 --type-heading-family:var(--font-display); /* @kind font */
 --type-body-family:var(--font-body); /* @kind font */
+--type-stat-family:var(--font-subtitle); /* @kind font */
 }
