@@ -1,4 +1,3 @@
-[readme.md](https://github.com/user-attachments/files/33729233/readme.md)
 # RHM Staffing Solutions Design System
 
 Brand foundations, components and a website UI kit for **RHM Staffing Solutions**, a U.S. staffing firm with offices across the country.
