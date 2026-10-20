@@ -1,0 +1,31 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Liquid glass" subtitle="Dark, light and brand tones; panel, pill, circle; interactive" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;font-family:var(--font-body)}.stage{position:relative;height:340px;overflow:hidden;background:#02195C url(../../assets/backgrounds/grain-midnight-arc.jpg) center/cover}.blob{position:absolute;pointer-events:none}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const {LiquidGlass,Icon}=window.RHMStaffingDesignSystem_7f6616;
+const Note=({tone,t,m,icon})=><LiquidGlass tone={tone} interactive style={{display:'flex',alignItems:'center',gap:12,width:330,padding:'12px 16px'}}>
+  <div style={{width:40,height:40,borderRadius:10,background:tone==='light'?'#fff':'rgba(255,255,255,0.92)',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><img src={`../../assets/icons/brand/line/blue/${icon}.png`} style={{width:26,height:26}} alt=""/></div>
+  <div style={{flex:1,minWidth:0}}><div style={{fontWeight:600,fontSize:15}}>{t}</div><div style={{fontSize:13,opacity:.82}}>{m}</div></div>
+  <div style={{fontSize:12,opacity:.6,alignSelf:'flex-start'}}>9:41 AM</div></LiquidGlass>;
+function App(){return <div className="stage">
+<img className="blob rhm-fade-edges" src="../../assets/backgrounds/blob-cyan.png" style={{width:260,left:330,top:60}} alt=""/>
+<img className="blob rhm-fade-edges" src="../../assets/backgrounds/blob-blue.png" style={{width:220,left:40,top:170}} alt=""/>
+<div style={{position:'absolute',left:24,top:24,display:'flex',flexDirection:'column',gap:10}}>
+<Note tone="dark" t="New match" m="CNC Machinist, Elgin IL" icon="industry-manufacturing"/>
+<Note tone="brand" t="Hours approved" m="Paid this Friday" icon="benefits-weekly-pay"/>
+<Note tone="light" t="Interview set" m="Tue 10:00, Rockford office" icon="screening-interview"/>
+</div>
+<div style={{position:'absolute',right:24,top:24,display:'flex',flexDirection:'column',gap:12,alignItems:'flex-end'}}>
+<LiquidGlass shape="pill" interactive style={{fontWeight:600,fontSize:15,display:'flex',gap:8,alignItems:'center'}}>Request talent <Icon name="arrow-right" size={16}/></LiquidGlass>
+<LiquidGlass shape="pill" tone="brand" interactive style={{fontWeight:600,fontSize:15}}>See open jobs</LiquidGlass>
+<LiquidGlass shape="pill" tone="light" interactive style={{fontWeight:600,fontSize:15}}>For clients</LiquidGlass>
+<div style={{display:'flex',gap:10}}>{['menu','search','phone'].map((i,k)=><LiquidGlass key={i} shape="circle" tone={['dark','brand','light'][k]} interactive style={{width:48,height:48,display:'flex',alignItems:'center',justifyContent:'center'}}><Icon name={i} size={20}/></LiquidGlass>)}</div>
+</div>
+<LiquidGlass shape="pill" style={{position:'absolute',right:24,bottom:24,display:'flex',gap:16,padding:'10px 20px',fontSize:14,fontWeight:500,whiteSpace:'nowrap'}}><span style={{fontWeight:600}}>Home</span><span style={{opacity:.75}}>Clients</span><span style={{opacity:.75}}>Contractors</span><span style={{opacity:.75}}>Careers</span></LiquidGlass>
+</div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>
