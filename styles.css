@@ -2,4 +2,6 @@
 @import "tokens/colors.css";
 @import "tokens/typography.css";
 @import "tokens/spacing.css";
+@import "tokens/glass.css";
+@import "tokens/effects.css";
 @import "tokens/base.css";

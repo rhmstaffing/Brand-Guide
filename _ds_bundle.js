@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"RHMStaffingDesignSystem_7f6616","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"IconButton","sourcePath":"components/actions/IconButton.jsx"},{"name":"Icon","sourcePath":"components/brand/Icon.jsx"},{"name":"Logo","sourcePath":"components/brand/Logo.jsx"},{"name":"SectionHeading","sourcePath":"components/brand/SectionHeading.jsx"},{"name":"Badge","sourcePath":"components/display/Badge.jsx"},{"name":"Card","sourcePath":"components/display/Card.jsx"},{"name":"Tag","sourcePath":"components/display/Tag.jsx"},{"name":"Dialog","sourcePath":"components/feedback/Dialog.jsx"},{"name":"Toast","sourcePath":"components/feedback/Toast.jsx"},{"name":"Tooltip","sourcePath":"components/feedback/Tooltip.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"Input","sourcePath":"components/forms/Input.jsx"},{"name":"Radio","sourcePath":"components/forms/Radio.jsx"},{"name":"Select","sourcePath":"components/forms/Select.jsx"},{"name":"Switch","sourcePath":"components/forms/Switch.jsx"},{"name":"Tabs","sourcePath":"components/navigation/Tabs.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"bee62d09f60a","components/actions/IconButton.jsx":"c4eb98422ff7","components/brand/Icon.jsx":"a99f328b1cd5","components/brand/Logo.jsx":"23f95b778f31","components/brand/SectionHeading.jsx":"5c1076aefd19","components/display/Badge.jsx":"be4d31e1cf01","components/display/Card.jsx":"6461bb21e9ab","components/display/Tag.jsx":"cf6ef93e0497","components/feedback/Dialog.jsx":"dd107039f57e","components/feedback/Toast.jsx":"c021dada69c0","components/feedback/Tooltip.jsx":"852ae0f2b9c7","components/forms/Checkbox.jsx":"d5ee52bbec09","components/forms/Input.jsx":"4f4f15dc0af6","components/forms/Radio.jsx":"3776bea3d06f","components/forms/Select.jsx":"ed7b3200d88c","components/forms/Switch.jsx":"74d2d99bfaa8","components/navigation/Tabs.jsx":"66109bf19a7f","ui_kits/website/CareersScreen.jsx":"5821f507a2ae","ui_kits/website/Chrome.jsx":"5fbdcd41f350","ui_kits/website/ClientsScreen.jsx":"5d77862f9155","ui_kits/website/ContactScreen.jsx":"3fefc0a2385a","ui_kits/website/ContractorsScreen.jsx":"00c4919911c1","ui_kits/website/HomeScreen.jsx":"49b2ccafe596"},"inlinedExternals":[],"unexposedExports":[]} */
+/* @ds-bundle: {"format":4,"namespace":"RHMStaffingDesignSystem_7f6616","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"IconButton","sourcePath":"components/actions/IconButton.jsx"},{"name":"Icon","sourcePath":"components/brand/Icon.jsx"},{"name":"Logo","sourcePath":"components/brand/Logo.jsx"},{"name":"SectionHeading","sourcePath":"components/brand/SectionHeading.jsx"},{"name":"Badge","sourcePath":"components/display/Badge.jsx"},{"name":"Card","sourcePath":"components/display/Card.jsx"},{"name":"Tag","sourcePath":"components/display/Tag.jsx"},{"name":"Dialog","sourcePath":"components/feedback/Dialog.jsx"},{"name":"Toast","sourcePath":"components/feedback/Toast.jsx"},{"name":"Tooltip","sourcePath":"components/feedback/Tooltip.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"Input","sourcePath":"components/forms/Input.jsx"},{"name":"Radio","sourcePath":"components/forms/Radio.jsx"},{"name":"Select","sourcePath":"components/forms/Select.jsx"},{"name":"Switch","sourcePath":"components/forms/Switch.jsx"},{"name":"LiquidGlass","sourcePath":"components/glass/LiquidGlass.jsx"},{"name":"Tabs","sourcePath":"components/navigation/Tabs.jsx"}],"sourceHashes":{"assets/motion/line-wave.js":"c3d633be4eeb","components/actions/Button.jsx":"bee62d09f60a","components/actions/IconButton.jsx":"c4eb98422ff7","components/brand/Icon.jsx":"a99f328b1cd5","components/brand/Logo.jsx":"23f95b778f31","components/brand/SectionHeading.jsx":"5c1076aefd19","components/display/Badge.jsx":"be4d31e1cf01","components/display/Card.jsx":"6461bb21e9ab","components/display/Tag.jsx":"cf6ef93e0497","components/feedback/Dialog.jsx":"dd107039f57e","components/feedback/Toast.jsx":"c021dada69c0","components/feedback/Tooltip.jsx":"852ae0f2b9c7","components/forms/Checkbox.jsx":"d5ee52bbec09","components/forms/Input.jsx":"4f4f15dc0af6","components/forms/Radio.jsx":"3776bea3d06f","components/forms/Select.jsx":"ed7b3200d88c","components/forms/Switch.jsx":"74d2d99bfaa8","components/glass/LiquidGlass.jsx":"ae3cc0aa44c2","components/navigation/Tabs.jsx":"66109bf19a7f","ui_kits/website/CareersScreen.jsx":"5821f507a2ae","ui_kits/website/Chrome.jsx":"5fbdcd41f350","ui_kits/website/ClientsScreen.jsx":"5d77862f9155","ui_kits/website/ContactScreen.jsx":"3fefc0a2385a","ui_kits/website/ContractorsScreen.jsx":"00c4919911c1","ui_kits/website/HomeScreen.jsx":"49b2ccafe596"},"inlinedExternals":[],"unexposedExports":[]} */
 
 (() => {
 
@@ -7,6 +7,105 @@ const __ds_ns = (window.RHMStaffingDesignSystem_7f6616 = window.RHMStaffingDesig
 const __ds_scope = {};
 
 (__ds_ns.__errors = __ds_ns.__errors || []);
+
+// assets/motion/line-wave.js
+try { (() => {
+/* <rhm-line-wave> : animated ribbon of thin lines that flows like water and loops seamlessly.
+   Usage: <script src="assets/motion/line-wave.js"></script>
+          <rhm-line-wave lines="48" color="#ffffff" period="20" amplitude="1" style="position:absolute;inset:0"></rhm-line-wave>
+   Attributes: lines (count), color, period (seconds per loop), amplitude (multiplier), opacity (max alpha), fade ("right"|"left"|"both"|"none"). */
+(() => {
+  if (customElements.get('rhm-line-wave')) return;
+  const TAU = Math.PI * 2;
+  class RHMLineWave extends HTMLElement {
+    connectedCallback() {
+      if (!this.style.display) this.style.display = 'block';
+      this.c = document.createElement('canvas');
+      this.c.style.cssText = 'width:100%;height:100%;display:block';
+      this.appendChild(this.c);
+      this.ctx = this.c.getContext('2d');
+      this.t0 = performance.now();
+      this.ro = new ResizeObserver(() => this.size());
+      this.ro.observe(this);
+      this.size();
+      this.rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const loop = n => {
+        this.draw((n - this.t0) / 1000);
+        if (!this.rm) this.raf = requestAnimationFrame(loop);
+      };
+      this.raf = requestAnimationFrame(loop);
+    }
+    disconnectedCallback() {
+      cancelAnimationFrame(this.raf);
+      this.ro && this.ro.disconnect();
+    }
+    size() {
+      const d = Math.min(window.devicePixelRatio || 1, 2),
+        r = this.getBoundingClientRect();
+      this.w = r.width;
+      this.h = r.height;
+      this.c.width = Math.max(1, r.width * d);
+      this.c.height = Math.max(1, r.height * d);
+      this.ctx.setTransform(d, 0, 0, d, 0, 0);
+      this.draw((performance.now() - (this.t0 || performance.now())) / 1000);
+    }
+    draw(s) {
+      const {
+        ctx,
+        w,
+        h
+      } = this;
+      if (!w || !h) return;
+      const N = +this.getAttribute('lines') || 40,
+        P = +this.getAttribute('period') || 20,
+        A = +(this.getAttribute('amplitude') || 1),
+        col = this.getAttribute('color') || '#ffffff',
+        op = +(this.getAttribute('opacity') || 0.35),
+        fade = this.getAttribute('fade') || 'right';
+      const tau = s % P / P;
+      ctx.clearRect(0, 0, w, h);
+      const g = ctx.createLinearGradient(0, 0, w, 0);
+      const a = x => col + Math.round(x * 255).toString(16).padStart(2, '0');
+      if (fade === 'right') {
+        g.addColorStop(0, a(op));
+        g.addColorStop(.55, a(op * .45));
+        g.addColorStop(1, a(op * .18));
+      } else if (fade === 'left') {
+        g.addColorStop(0, a(op * .18));
+        g.addColorStop(.45, a(op * .45));
+        g.addColorStop(1, a(op));
+      } else if (fade === 'both') {
+        g.addColorStop(0, a(0));
+        g.addColorStop(.2, a(op));
+        g.addColorStop(.8, a(op));
+        g.addColorStop(1, a(0));
+      } else {
+        g.addColorStop(0, a(op));
+        g.addColorStop(1, a(op));
+      }
+      ctx.strokeStyle = g;
+      ctx.lineWidth = 1;
+      const steps = Math.max(80, Math.round(w / 6));
+      for (let i = 0; i < N; i++) {
+        const k = i / (N - 1),
+          kc = k - .5;
+        ctx.beginPath();
+        for (let j = 0; j <= steps; j++) {
+          const x = j / steps,
+            X = -0.02 * w + x * w * 1.04;
+          const base = .12 * Math.sin(TAU * (x * .85 + tau) + .4) + .07 * Math.sin(TAU * (x * 1.6 - 2 * tau) + 1.3) + .05 * Math.sin(TAU * (x * .4 + tau) + 2.1);
+          const spread = .46 * (.18 + .82 * (.5 + .5 * Math.sin(TAU * (x * .9 - tau) + .9)));
+          const twist = Math.cos(TAU * (x * .7 + tau) + kc * .6);
+          const y = h * (.5 + A * (base + kc * spread * twist + .015 * Math.sin(TAU * (x * 2.3 + 3 * tau) + k * 3)));
+          j ? ctx.lineTo(X, y) : ctx.moveTo(X, y);
+        }
+        ctx.stroke();
+      }
+    }
+  }
+  customElements.define('rhm-line-wave', RHMLineWave);
+})();
+})(); } catch (e) { __ds_ns.__errors.push({ path: "assets/motion/line-wave.js", error: String((e && e.message) || e) }); }
 
 // components/brand/Icon.jsx
 try { (() => {
@@ -1019,6 +1118,90 @@ function Switch({
 Object.assign(__ds_scope, { Switch });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/forms/Switch.jsx", error: String((e && e.message) || e) }); }
 
+// components/glass/LiquidGlass.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+let filterInjected = false;
+function ensureFilter() {
+  if (filterInjected || typeof document === 'undefined') return;
+  filterInjected = true;
+  const d = document.createElement('div');
+  d.setAttribute('aria-hidden', 'true');
+  d.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+  d.innerHTML = '<svg width="0" height="0"><filter id="rhm-liquid-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="n"/><feGaussianBlur in="n" stdDeviation="2" result="nb"/><feDisplacementMap in="SourceGraphic" in2="nb" scale="38" xChannelSelector="R" yChannelSelector="G"/></filter></svg>';
+  document.body.appendChild(d);
+}
+const isChromium = typeof navigator !== 'undefined' && /Chrome\//.test(navigator.userAgent) && !/Edg\/|OPR\//.test(navigator.userAgent) || false;
+function LiquidGlass({
+  tone = 'dark',
+  shape = 'panel',
+  refract = true,
+  interactive = false,
+  radius,
+  padding,
+  as = 'div',
+  children,
+  style,
+  onClick,
+  ...rest
+}) {
+  const [h, setH] = React.useState(false);
+  const [p, setP] = React.useState(false);
+  React.useEffect(() => {
+    if (refract) ensureFilter();
+  }, [refract]);
+  const t = {
+    dark: ['--glass-dark-fill', '--glass-dark-tint', '--glass-dark-ring', '#fff'],
+    light: ['--glass-light-fill', '--glass-light-tint', '--glass-light-ring', 'var(--rhm-ink)'],
+    brand: ['--glass-brand-fill', '--glass-brand-tint', '--glass-brand-ring', '#fff']
+  }[tone] || [];
+  const r = radius ?? (shape === 'pill' ? 'var(--glass-radius-pill)' : shape === 'circle' ? '50%' : 'var(--glass-radius)');
+  const blur = `blur(var(--glass-blur)) saturate(var(--glass-saturate))`;
+  const bf = refract && isChromium ? `url(#rhm-liquid-refract) ${blur}` : blur;
+  const Tag = as;
+  return /*#__PURE__*/React.createElement(Tag, _extends({
+    onClick: onClick,
+    onMouseEnter: () => setH(true),
+    onMouseLeave: () => {
+      setH(false);
+      setP(false);
+    },
+    onMouseDown: () => setP(true),
+    onMouseUp: () => setP(false)
+  }, rest, {
+    style: {
+      position: 'relative',
+      isolation: 'isolate',
+      boxSizing: 'border-box',
+      borderRadius: r,
+      padding: padding ?? (shape === 'panel' ? '18px 22px' : shape === 'pill' ? '10px 20px' : 0),
+      color: t[3],
+      background: `var(${t[1]}),var(${t[0]})`,
+      backdropFilter: bf,
+      WebkitBackdropFilter: blur,
+      boxShadow: `0 0 0 0.5px var(${t[2]}),var(--glass-edge-highlight),var(--glass-edge-shade),${interactive && h ? 'var(--glass-drop-lift)' : 'var(--glass-drop)'}`,
+      transform: interactive ? p ? 'scale(0.97)' : h ? 'translateY(-2px) scale(1.01)' : 'none' : 'none',
+      transition: 'transform 320ms cubic-bezier(0.34,1.56,0.64,1),box-shadow 240ms var(--ease-standard)',
+      cursor: interactive || onClick ? 'pointer' : undefined,
+      overflow: 'hidden',
+      ...style
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    "aria-hidden": "true",
+    style: {
+      position: 'absolute',
+      inset: 0,
+      borderRadius: 'inherit',
+      pointerEvents: 'none',
+      zIndex: -1,
+      background: 'radial-gradient(120% 60% at 30% 0%,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 60%)',
+      opacity: tone === 'light' ? 0.9 : 1
+    }
+  }), children);
+}
+Object.assign(__ds_scope, { LiquidGlass });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/glass/LiquidGlass.jsx", error: String((e && e.message) || e) }); }
+
 // components/navigation/Tabs.jsx
 try { (() => {
 function Tabs({
@@ -2023,6 +2206,8 @@ __ds_ns.Radio = __ds_scope.Radio;
 __ds_ns.Select = __ds_scope.Select;
 
 __ds_ns.Switch = __ds_scope.Switch;
+
+__ds_ns.LiquidGlass = __ds_scope.LiquidGlass;
 
 __ds_ns.Tabs = __ds_scope.Tabs;
 

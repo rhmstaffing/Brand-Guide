@@ -16,11 +16,13 @@
         "patterns": [
           {
             "group": [
+              "assets/motion/**",
               "components/actions/**",
               "components/brand/**",
               "components/display/**",
               "components/feedback/**",
               "components/forms/**",
+              "components/glass/**",
               "components/navigation/**",
               "ui_kits/website/**"
             ],
@@ -40,8 +42,8 @@
         "message": "Raw px value — use a design-system spacing token via var()."
       },
       {
-        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:RHM Title|Josefin Sans|Google Sans))/i]",
-        "message": "Font not provided by the design system. Available: RHM Title, Josefin Sans, Google Sans."
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:RHM Title|Josefin Sans|Google Sans|RHM Subtitle))/i]",
+        "message": "Font not provided by the design system. Available: RHM Title, Josefin Sans, Google Sans, RHM Subtitle."
       },
       {
         "selector": "JSXOpeningElement[name.name='Badge'] > JSXAttribute > JSXIdentifier[name!=/^(?:tone|dot|children|style|key|ref|className|style|children)$/]",
@@ -94,6 +96,18 @@
       {
         "selector": "JSXOpeningElement[name.name='Input'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|hint|error|multiline|rows|key|ref|className|style|children)$/]",
         "message": "<Input> doesn't accept that prop. Declared props: label, hint, error, multiline, rows."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='LiquidGlass'] > JSXAttribute > JSXIdentifier[name!=/^(?:tone|shape|refract|interactive|radius|padding|as|onClick|style|children|key|ref|className|style|children)$/]",
+        "message": "<LiquidGlass> doesn't accept that prop. Declared props: tone, shape, refract, interactive, radius, padding, as, onClick, style, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='LiquidGlass'] > JSXAttribute[name.name='tone'] > Literal[value!=/^(?:dark|light|brand)$/]",
+        "message": "<LiquidGlass> tone must be one of 'dark' | 'light' | 'brand'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='LiquidGlass'] > JSXAttribute[name.name='shape'] > Literal[value!=/^(?:panel|pill|circle)$/]",
+        "message": "<LiquidGlass> shape must be one of 'panel' | 'pill' | 'circle'."
       },
       {
         "selector": "JSXOpeningElement[name.name='Logo'] > JSXAttribute > JSXIdentifier[name!=/^(?:tone|width|basePath|style|key|ref|className|style|children)$/]",
@@ -205,6 +219,9 @@
       "Input": {
         "replaces": []
       },
+      "LiquidGlass": {
+        "replaces": []
+      },
       "Logo": {
         "replaces": []
       },
@@ -257,14 +274,19 @@
       "--border-strong",
       "--border-subtle",
       "--border-width",
+      "--clip-parallelogram",
+      "--clip-parallelogram-left",
+      "--clip-parallelogram-right",
       "--container-max",
       "--dur-base",
       "--dur-fast",
       "--dur-slow",
+      "--ease-loop",
       "--ease-out",
       "--ease-standard",
       "--font-body",
       "--font-display",
+      "--font-subtitle",
       "--font-title",
       "--fs-body",
       "--fs-caption",
@@ -276,10 +298,28 @@
       "--fs-hero",
       "--fs-lead",
       "--fs-small",
+      "--fs-stat",
       "--fw-bold",
       "--fw-medium",
       "--fw-regular",
       "--fw-semibold",
+      "--glass-blur",
+      "--glass-brand-fill",
+      "--glass-brand-ring",
+      "--glass-brand-tint",
+      "--glass-dark-fill",
+      "--glass-dark-ring",
+      "--glass-dark-tint",
+      "--glass-drop",
+      "--glass-drop-lift",
+      "--glass-edge-highlight",
+      "--glass-edge-shade",
+      "--glass-light-fill",
+      "--glass-light-ring",
+      "--glass-light-tint",
+      "--glass-radius",
+      "--glass-radius-pill",
+      "--glass-saturate",
       "--gradient-bright",
       "--gradient-deep",
       "--gradient-protect",
@@ -300,10 +340,16 @@
       "--lh-body",
       "--lh-heading",
       "--lh-tight",
+      "--loop-fast",
+      "--loop-med",
+      "--loop-slow",
       "--ls-body",
       "--ls-display",
       "--ls-eyebrow",
       "--ls-title",
+      "--mask-fade-edges",
+      "--mask-fade-x",
+      "--mask-fade-y",
       "--radius-lg",
       "--radius-md",
       "--radius-none",
@@ -323,6 +369,8 @@
       "--shadow-lg",
       "--shadow-md",
       "--shadow-sm",
+      "--skew-logo",
+      "--skew-soft",
       "--sky-100",
       "--sky-200",
       "--sky-300",
@@ -363,7 +411,8 @@
       "--text-strong",
       "--type-body-family",
       "--type-heading-family",
-      "--type-hero-family"
+      "--type-hero-family",
+      "--type-stat-family"
     ],
     "tokenKinds": {
       "--rhm-ink": "color",
@@ -442,6 +491,8 @@
       "--font-title": "font",
       "--font-display": "font",
       "--font-body": "font",
+      "--font-subtitle": "font",
+      "--fs-stat": "spacing",
       "--fs-hero": "spacing",
       "--fs-h1": "spacing",
       "--fs-h2": "spacing",
@@ -466,6 +517,7 @@
       "--type-hero-family": "font",
       "--type-heading-family": "font",
       "--type-body-family": "font",
+      "--type-stat-family": "font",
       "--space-1": "spacing",
       "--space-2": "spacing",
       "--space-3": "spacing",
@@ -495,11 +547,41 @@
       "--ease-out": "other",
       "--dur-fast": "other",
       "--dur-base": "other",
-      "--dur-slow": "other"
+      "--dur-slow": "other",
+      "--glass-blur": "other",
+      "--glass-saturate": "other",
+      "--glass-radius": "spacing",
+      "--glass-radius-pill": "spacing",
+      "--glass-dark-fill": "color",
+      "--glass-dark-tint": "color",
+      "--glass-dark-ring": "color",
+      "--glass-light-fill": "color",
+      "--glass-light-tint": "color",
+      "--glass-light-ring": "color",
+      "--glass-brand-fill": "color",
+      "--glass-brand-tint": "color",
+      "--glass-brand-ring": "color",
+      "--glass-edge-highlight": "shadow",
+      "--glass-edge-shade": "shadow",
+      "--glass-drop": "shadow",
+      "--glass-drop-lift": "shadow",
+      "--skew-logo": "other",
+      "--skew-soft": "other",
+      "--clip-parallelogram": "other",
+      "--clip-parallelogram-right": "other",
+      "--clip-parallelogram-left": "other",
+      "--mask-fade-edges": "other",
+      "--mask-fade-x": "other",
+      "--mask-fade-y": "other",
+      "--loop-slow": "other",
+      "--loop-med": "other",
+      "--loop-fast": "other",
+      "--ease-loop": "other"
     },
     "fontFamilies": [
       "Google Sans",
       "Josefin Sans",
+      "RHM Subtitle",
       "RHM Title"
     ]
   }
