@@ -1,0 +1,14 @@
+<!-- @dsCard group="Brand" viewport="700x220" name="Looping motion" subtitle="Spaced line ribbon flowing over soft blending blue gradients. 20s seamless loop. Text and buttons never loop." -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><script src="../../assets/motion/line-wave.js"></script><style>body{margin:0;font-family:var(--font-body)}
+.s{position:relative;height:220px;overflow:hidden;background:#02195C}
+.g{position:absolute;border-radius:50%;filter:blur(48px);will-change:transform}
+.g1{width:70%;height:150%;left:-15%;top:-40%;background:radial-gradient(closest-side,#060F1A 0%,rgba(6,15,26,0) 100%);animation:rhm-flow 26s linear infinite}
+.g2{width:75%;height:160%;right:-20%;top:-60%;background:radial-gradient(closest-side,rgba(82,192,228,.75) 0%,rgba(82,192,228,0) 100%);animation:rhm-flow-rev 30s linear infinite}
+.g3{width:80%;height:150%;left:15%;bottom:-75%;background:radial-gradient(closest-side,rgba(8,79,163,.95) 0%,rgba(8,79,163,0) 100%);animation:rhm-flow 22s linear infinite;animation-delay:-8s}
+.g4{width:55%;height:120%;left:35%;top:-30%;background:radial-gradient(closest-side,rgba(2,25,92,.9) 0%,rgba(2,25,92,0) 100%);animation:rhm-flow-rev 34s linear infinite;animation-delay:-14s}
+.cap{position:absolute;left:24px;bottom:14px;color:#fff;font-size:12px;display:flex;gap:18px}.cap b{color:var(--rhm-sky);font-weight:600}
+@media (prefers-reduced-motion:reduce){.g{animation:none}}</style></head><body><div class="s">
+<div class="g g1"></div><div class="g g2"></div><div class="g g3"></div><div class="g g4"></div>
+<rhm-line-wave lines="18" period="20" opacity="0.55" fade="right" style="position:absolute;inset:-10px 0 10px 0"></rhm-line-wave>
+<div class="cap"><span><b>&lt;rhm-line-wave lines="18"&gt;</b></span><span><b>20s</b> seamless loop</span><span><b>blending glows</b> 22 to 34s, rhm-flow</span></div>
+</div></body></html>
