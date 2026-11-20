@@ -17,6 +17,7 @@ Brand-Guide/
 │   ├── icons/           32 brand icons: <style>/<color>/<size>/<name>.png
 │   ├── backgrounds/     grain, glass, fluid and blob backgrounds
 │   ├── lines/           line-wave PNGs (source/ has the original artboards + .ai file)
+│   ├── motion/          line-wave.js animated line ribbon
 │   ├── photos/          Adobe Stock photos
 │   └── reference/       original palette sheet, brand thumbnail
 ├── components/          React components by group (actions, brand, display, feedback, forms, glass, navigation)
@@ -179,7 +180,7 @@ All uploaded to this project (originals in `uploads/`):
 - `tokens/effects.css`: parallelogram clips, edge-fade masks, loop keyframes + utility classes
 - `tokens/glass.css`: liquid glass variables
 - `fonts/`: RHM_Title, RHM Subtitle (regular + italic), Josefin Sans, Google Sans (TTF)
-- `assets/motion/line-wave.js`: `<rhm-line-wave>` animated line ribbon (signature loop). **Not in the repo yet**; `guidelines/brand/motion-loops.html` needs it.
+- `assets/motion/line-wave.js`: `<rhm-line-wave>` animated line ribbon (signature loop). Used by `guidelines/brand/motion-loops.html`.
 - `assets/logo/`: `rhm-horizontal-blue.png`, `rhm-horizontal-white.png`
 - `assets/backgrounds/`: grain (navy-sky, cyan-streak, cobalt-glow, cream-wave, midnight-arc, midnight-streak), glass (glass-texture, fluted-glass), fluid (blue-wave, blue-violet), soft blobs (blue, cyan)
 - `assets/lines/`: wave-blue-01..03, wave-cyan-01, wave-black-01, wave-white-01..06, wave-white-wide-01..02
