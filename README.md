@@ -1,7 +1,42 @@
-[readme.md](https://github.com/user-attachments/files/33729583/readme.md)
 # RHM Staffing Solutions Design System
 
 Brand foundations, components and a website UI kit for **RHM Staffing Solutions**, a U.S. staffing firm with offices across the country.
+
+## Repo layout
+
+```
+Brand-Guide/
+├── README.md            this file: brand rules + index
+├── SKILL.md             entry point when Claude uses this repo as a design skill
+├── styles.css           one stylesheet that pulls in every token file
+├── thumbnail.html       design system cover card
+├── tokens/              CSS variables: colors, type, spacing, glass, effects, base
+├── fonts/               RHM Title, RHM Subtitle, Josefin Sans, Google Sans (TTF)
+├── assets/
+│   ├── logo/            horizontal lockups (blue, white)
+│   ├── icons/           32 brand icons: <style>/<color>/<size>/<name>.png
+│   ├── backgrounds/     grain, glass, fluid and blob backgrounds
+│   ├── lines/           line-wave PNGs (source/ has the original artboards + .ai file)
+│   ├── motion/          line-wave.js animated line ribbon
+│   ├── photos/          Adobe Stock photos
+│   └── reference/       original palette sheet, brand thumbnail
+├── components/          React components by group (actions, brand, display, feedback, forms, glass, navigation)
+├── guidelines/          specimen cards (brand, colors, type, spacing, content) + audiences.md
+├── templates/
+│   └── client-one-pager/  AE one-pager (editable, static, print and standalone versions)
+├── ui_kits/
+│   └── website/         marketing site click-through (index.html + screens)
+├── _ds_bundle.js        compiled component bundle used by the HTML pages
+├── _ds_manifest.json    design system manifest (components, cards, tokens, fonts)
+├── _adherence.oxlintrc.json  lint rules that keep code on-brand
+└── github.md            sync notes between this repo and the Claude design project
+```
+
+**Viewing the pages.** The HTML files use relative paths and load `.jsx` files, so open them through a local server, not by double-clicking. From the repo folder run `npx serve .` (or `python3 -m http.server`) and go to, for example, `/ui_kits/website/` or `/guidelines/colors/brand.html`. The one file that works on its own is `templates/client-one-pager/client-one-pager-standalone.html`.
+
+**Using the brand in a project.** Copy `styles.css`, `tokens/`, `fonts/` and the `assets/` you need, keep the folder structure, and link `styles.css`. All colors, fonts and spacing are CSS variables (see `tokens/`).
+
+**Adding files.** Put new files in the folder that matches the list above instead of the repo root. Use lowercase-with-hyphens file names, no spaces.
 
 ## Company context
 
@@ -123,13 +158,13 @@ All uploaded to this project (originals in `uploads/`):
 
 ## ICONOGRAPHY
 
-- **Brand icon set (use first).** 32 custom RHM icons from the Brand Guide repo (`rhmstaffing/Brand-Guide`, `components/Icons/`), copied as 128px PNGs to `assets/icons/brand/<style>/<color>/<name>.png`.
+- **Brand icon set (use first).** 32 custom RHM icons in `assets/icons/<style>/<color>/<size>/<name>.png`. Sizes: `128` for screens, `512` and `1024` for print.
   - Styles: `line` (outline only), `solid-circle`, `solid-square`, `tinted-square` (icon on a light tint of its color).
   - Colors: `blue`, `navy`, `sky`, `white`. Use `white` only on dark or photo backgrounds.
   - Names by group: **benefits** (dental, dependents, discounts, eap, medical, vision, weekly-pay), **careers** (401k, commission, fast-track, incentive-trips, training), **client** (benchmarks, compliance, conversion, retention, scale, time-to-fill), **contact** (email, location, phone), **industry** (architecture-construction, embedded-engineering, engineering, life-sciences, light-industrial, manufacturing, skilled-trades), **screening** (interview, orientation, phone-screen, references).
-  - Example: `assets/icons/brand/tinted-square/blue/industry-manufacturing.png`.
+  - Example: `assets/icons/tinted-square/blue/128/industry-manufacturing.png`.
   - Pick one style per piece and don't mix styles in one row. Tinted square fits light layouts, solid fits heroes and dark bands, line fits dense lists.
-  - Gap: `line/sky` is missing benefits-dental, dependents, discounts and eap in the repo. 512px and 1024px sizes exist in the repo if you need print resolution.
+  - Every style, color and size has all 32 icons.
 - **UI glyphs (fallback).** For small UI icons the brand set doesn't cover (arrows, menu, close, check), the system uses **Lucide** (outline, 2px stroke, round caps) from CDN (`lucide-static@0.460.0`) via the `Icon` component, which masks the SVG so it takes `currentColor`. Never use Lucide where a brand icon exists.
 - Sizes: 16 to 20px inline, 22px inside card icon squares, 24 to 28px in feature rows.
 - Color: RHM Blue on light, Sky on dark.
@@ -141,18 +176,21 @@ All uploaded to this project (originals in `uploads/`):
 ## Index
 
 - `styles.css`: entry point (imports only)
-- `tokens/`: `fonts.css`, `colors.css`, `typography.css`, `spacing.css`, `base.css`
-- `fonts/`: RHM_Title, RHM Subtitle (regular + italic), Josefin Sans, Google Sans (TTF)
-- `assets/motion/line-wave.js`: `<rhm-line-wave>` animated line ribbon (signature loop)
+- `tokens/`: `fonts.css`, `colors.css`, `typography.css`, `spacing.css`, `glass.css`, `effects.css`, `base.css`
 - `tokens/effects.css`: parallelogram clips, edge-fade masks, loop keyframes + utility classes
+- `tokens/glass.css`: liquid glass variables
+- `fonts/`: RHM_Title, RHM Subtitle (regular + italic), Josefin Sans, Google Sans (TTF)
+- `assets/motion/line-wave.js`: `<rhm-line-wave>` animated line ribbon (signature loop). Used by `guidelines/brand/motion-loops.html`.
 - `assets/logo/`: `rhm-horizontal-blue.png`, `rhm-horizontal-white.png`
-- `assets/backgrounds/`: grain (navy-sky, cyan-streak, cobalt-glow, cream-wave, midnight-arc, midnight-streak), glass (glass-texture, fluted-glass), fluid (blue-wave, blue-violet), soft blobs (blue, cyan)
+- `assets/backgrounds/`: grain (navy-sky, cyan-streak, cobalt-glow, cream-wave, midnight-arc, midnight-streak, sky-ripple), glass (glass-texture, fluted-glass, fluted-glass-cobalt, fluted-glass-light), fluid (blue-wave, blue-violet), soft blobs (blue, cyan). `fluted-glass-light` is the only light glass option; use navy or blue text over its white top-left.
 - `assets/lines/`: wave-blue-01..03, wave-cyan-01, wave-black-01, wave-white-01..06, wave-white-wide-01..02
-- `assets/reference/`: original palette sheet
-- `assets/icons/brand/`: 32 RHM brand icons, 4 styles x 4 colors, 128px PNG (see ICONOGRAPHY)
-- `guidelines/`: specimen cards (colors, type, spacing, brand, content) + `audiences.md` persona messaging guide
-- `templates/client-one-pager/`: letter-size client one-pager for AEs, persona switch in Tweaks
-- `components/`: React primitives (below)
+- `assets/lines/source/`: original line artboards and `flowing-lines.ai`
+- `assets/photos/`: Adobe Stock photos
+- `assets/reference/`: original palette sheet, `brand-thumbnail.webp`
+- `assets/icons/`: 32 RHM brand icons, 4 styles x 4 colors x 3 sizes (see ICONOGRAPHY)
+- `guidelines/`: specimen cards (brand, colors, type, spacing, content) + `audiences.md` persona messaging guide
+- `templates/client-one-pager/`: letter-size client one-pager for AEs, persona switch in Tweaks. `ClientOnePager.dc.html` is the editable version; `-static`, `-print` and `-standalone` are exports.
+- `components/`: React components (below)
 - `ui_kits/website/`: marketing site click-through
 - `SKILL.md`: agent skill entry
 
@@ -164,6 +202,9 @@ All uploaded to this project (originals in `uploads/`):
 - **display/**: `Card`, `Badge`, `Tag`
 - **navigation/**: `Tabs`
 - **feedback/**: `Dialog`, `Toast`, `Tooltip`
+- **glass/**: `LiquidGlass`
+
+Each component has a `.jsx` file, a `.d.ts` file (props) and a `.prompt.md` file (when and how to use it). Each folder also has a `.card.html` preview.
 
 No source component library existed, so this is a standard set sized to a marketing site. Intentional additions: `Icon` (wraps the Lucide substitute), `SectionHeading` (eyebrow + heading pattern used on every section), `Logo` (safe logo usage).
 
