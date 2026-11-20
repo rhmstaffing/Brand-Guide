@@ -182,7 +182,7 @@ All uploaded to this project (originals in `uploads/`):
 - `fonts/`: RHM_Title, RHM Subtitle (regular + italic), Josefin Sans, Google Sans (TTF)
 - `assets/motion/line-wave.js`: `<rhm-line-wave>` animated line ribbon (signature loop). Used by `guidelines/brand/motion-loops.html`.
 - `assets/logo/`: `rhm-horizontal-blue.png`, `rhm-horizontal-white.png`
-- `assets/backgrounds/`: grain (navy-sky, cyan-streak, cobalt-glow, cream-wave, midnight-arc, midnight-streak), glass (glass-texture, fluted-glass), fluid (blue-wave, blue-violet), soft blobs (blue, cyan)
+- `assets/backgrounds/`: grain (navy-sky, cyan-streak, cobalt-glow, cream-wave, midnight-arc, midnight-streak, sky-ripple), glass (glass-texture, fluted-glass, fluted-glass-cobalt, fluted-glass-light), fluid (blue-wave, blue-violet), soft blobs (blue, cyan). `fluted-glass-light` is the only light glass option; use navy or blue text over its white top-left.
 - `assets/lines/`: wave-blue-01..03, wave-cyan-01, wave-black-01, wave-white-01..06, wave-white-wide-01..02
 - `assets/lines/source/`: original line artboards and `flowing-lines.ai`
 - `assets/photos/`: Adobe Stock photos
